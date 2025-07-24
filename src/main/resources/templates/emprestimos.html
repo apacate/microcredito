@@ -1,0 +1,511 @@
+</html><!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empréstimos - Sistema de Microcrédito</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: #343a40;
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .sidebar .nav-link:hover {
+            color: #fff;
+        }
+        .sidebar .nav-link.active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .table-actions {
+            white-space: nowrap;
+            width: 1%;
+        }
+
+
+        #tabelaAmortizacao {
+            font-size: 0.9rem;
+        }
+        #tabelaAmortizacao th, #tabelaAmortizacao td {
+            padding: 0.5rem;
+            text-align: right;
+        }
+        #tabelaAmortizacao th:first-child, #tabelaAmortizacao td:first-child,
+        #tabelaAmortizacao th:nth-child(2), #tabelaAmortizacao td:nth-child(2) {
+            text-align: center;
+        }
+        #tabelaAmortizacao tfoot th {
+            text-align: right;
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 d-none d-md-block sidebar p-0">
+            <div class="p-3 text-white">
+                <h4 class="text-center">Microcrédito</h4>
+                <hr class="bg-light">
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="/principal">
+                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/emprestimos">
+                        <i class="bi bi-cash-coin me-2"></i>Empréstimos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/clientes">
+                        <i class="bi bi-people me-2"></i>Clientes
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-graph-up me-2"></i>Relatórios
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <main class="col-md-10 ms-sm-auto px-md-4 py-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Gestão de Empréstimos</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#emprestimoModal">
+                        <i class="bi bi-plus-circle"></i> Novo Empréstimo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form class="row g-3">
+                        <div class="col-md-3">
+                            <label for="filtroStatus" class="form-label">Status</label>
+                            <select id="filtroStatus" class="form-select">
+                                <option selected>Todos</option>
+                                <option>ATIVO</option>
+                                <option>QUITADO</option>
+                                <option>VENCIDO</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filtroDataInicio" class="form-label">Data Início</label>
+                            <input type="date" class="form-control" id="filtroDataInicio">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filtroDataFim" class="form-label">Data Fim</label>
+                            <input type="date" class="form-control" id="filtroDataFim">
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-funnel"></i> Filtrar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tabela de empréstimos -->
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Valor</th>
+                                <th>Contratação</th>
+                                <th>Numero de Parcelas</th>
+                                <th>Status</th>
+                                <th class="table-actions">Ações</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="emprestimo : ${emprestimos.content}">
+                                <td th:text="${emprestimo.id}"></td>
+                                <td th:text="${emprestimo.cliente.nome} + ' ' + ${emprestimo.cliente.sobrenome}"></td>
+                                <td th:text="'R$ ' + ${#numbers.formatDecimal(emprestimo.valorEmprestimo, 1, 2, 'COMMA')}"></td>
+                                <td th:text="${#temporals.format(emprestimo.dataContratacao, 'dd/MM/yyyy')}"></td>
+                                <td th:text="${emprestimo.numeroParcelas}"></td>
+                                <td>
+                                            <span th:switch="${emprestimo.status}" class="badge">
+                                                <span th:case="'ATIVO'" class="badge bg-success">ATIVO</span>
+                                                <span th:case="'QUITADO'" class="badge bg-secondary">QUITADO</span>
+                                                <span th:case="'VENCIDO'" class="badge bg-danger">VENCIDO</span>
+                                            </span>
+                                </td>
+                                <td class="table-actions">
+                                    <button class="btn btn-sm btn-info" onclick="carregarDetalhes(${emprestimo.id})"
+                                            data-bs-toggle="modal" data-bs-target="#detalhesModal" title="Detalhes">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <form th:action="@{/emprestimos/delete/{id}(id=${emprestimo.id})}" method="post" style="display:inline;">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Confirmar exclusão?');" title="Excluir">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Paginação -->
+                    <nav th:if="${emprestimos.totalPages > 1}">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${!emprestimos.hasPrevious()} ? 'disabled'">
+                                <a class="page-link" th:href="@{/emprestimos(page=0,size=${emprestimos.size})}">
+                                    <i class="bi bi-chevron-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item" th:classappend="${!emprestimos.hasPrevious()} ? 'disabled'">
+                                <a class="page-link" th:href="@{/emprestimos(page=${emprestimos.number - 1},size=${emprestimos.size})}">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, emprestimos.totalPages - 1)}"
+                                th:classappend="${i == emprestimos.number} ? 'active'">
+                                <a class="page-link" th:href="@{/emprestimos(page=${i},size=${emprestimos.size})}"
+                                   th:text="${i + 1}"></a>
+                            </li>
+                            <li class="page-item" th:classappend="${!emprestimos.hasNext()} ? 'disabled'">
+                                <a class="page-link" th:href="@{/emprestimos(page=${emprestimos.number + 1},size=${emprestimos.size})}">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item" th:classappend="${!emprestimos.hasNext()} ? 'disabled'">
+                                <a class="page-link" th:href="@{/emprestimos(page=${emprestimos.totalPages - 1},size=${emprestimos.size})}">
+                                    <i class="bi bi-chevron-double-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Modal de Cadastro -->
+<!-- Modal de Cadastro -->
+<div class="modal fade" id="emprestimoModal" tabindex="-1" aria-labelledby="emprestimoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form th:action="@{/emprestimos/save}" method="post" id="formEmprestimo">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="emprestimoModalLabel">Cadastro de Empréstimo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="clienteSelect" class="form-label">Cliente:</label>
+                            <select id="clienteSelect" name="cliente.id" class="form-select" required>
+                                <option value="">Selecione um cliente</option>
+                                <option th:each="cliente : ${clientes}" th:value="${cliente.id}"
+                                        th:text="${cliente.nome} + ' ' + ${cliente.sobrenome}"></option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="valorEmprestimo" class="form-label">Valor Empréstimo (R$):</label>
+                            <div class="input-group">
+                                <span class="input-group-text">R$</span>
+                                <input id="valorEmprestimo" type="number" step="0.01" name="valorEmprestimo"
+                                       class="form-control" required placeholder="0,00"/>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="dataContratacao" class="form-label">Data Contratação:</label>
+                            <input id="dataContratacao" type="date" name="dataContratacao" class="form-control" required/>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="numParcelas" class="form-label">Número de Parcelas:</label>
+                            <input id="numParcelas" type="number" name="numeroParcelas" class="form-control" required min="1"/>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="taxaJuro" class="form-label">Taxa de Juro (% ao mes):</label>
+                            <div class="input-group">
+                                <input id="taxaJuro" type="number" step="0.01" name="taxaJurosAnual"
+                                       class="form-control" required placeholder="0.00"/>
+                                <span class="input-group-text">%</span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="tipoAmortizacao" class="form-label">Tipo de Amortização:</label>
+                            <select id="tipoAmortizacao" name="tipoAmortizacao" class="form-select" required>
+                                <option value="">Selecione...</option>
+                                <option value="CAPITAL_CONSTANTE">Capital Constante</option>
+                                <option value="PRESTACOES_CONSTANTES">Prestações Constantes</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="frequencia" class="form-label">Frequência de Pagamento:</label>
+                            <select id="frequencia" name="frequenciaPagamento" class="form-select" required>
+                                <option value="">Selecione...</option>
+                                <option value="MENSAL">Mensal</option>
+                                <option value="QUINZENAL">Quinzenal</option>
+                                <option value="SEMANAL">Semanal</option>
+                                <option value="DIARIO">Diário</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Seção da Tabela de Amortização (inicialmente oculta) -->
+                    <div id="tabelaAmortizacaoContainer" class="mt-4 d-none">
+                        <h5 class="mb-3">Simulação de Amortização</h5>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> Esta é uma simulação. O cálculo final será confirmado no momento do cadastro.
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered" id="tabelaAmortizacao">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>Parcela</th>
+                                    <th>Vencimento</th>
+                                    <th>Amortização</th>
+                                    <th>Juros</th>
+                                    <th>Prestação</th>
+                                    <th>Saldo Devedor</th>
+                                </tr>
+                                </thead>
+                                <tbody id="corpoTabelaAmortizacao">
+                                <!-- Linhas serão preenchidas via JavaScript -->
+                                </tbody>
+                                <tfoot>
+                                <tr class="table-active">
+                                    <th colspan="2">Totais</th>
+                                    <th id="totalAmortizacao">R$ 0,00</th>
+                                    <th id="totalJuros">R$ 0,00</th>
+                                    <th id="totalPrestacao">R$ 0,00</th>
+                                    <th>-</th>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnCalcular" class="btn btn-info">
+                        <i class="bi bi-calculator"></i> Calcular
+                    </button>
+                    <button type="submit" class="btn btn-primary">Salvar Empréstimo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Detalhes -->
+<div class="modal fade" id="detalhesModal" tabindex="-1" aria-labelledby="detalhesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="detalhesModalLabel">Detalhes do Empréstimo</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="detalhesBody">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function carregarDetalhes(id) {
+        document.getElementById('detalhesBody').innerHTML = `
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                </div>`;
+
+        fetch('/emprestimos/detalhes/' + id)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('detalhesBody').innerHTML = html;
+            })
+            .catch(err => {
+                document.getElementById('detalhesBody').innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle-fill"></i> Erro ao carregar detalhes do empréstimo.
+                        </div>`;
+            });
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnCalcular = document.getElementById('btnCalcular');
+        const tabelaContainer = document.getElementById('tabelaAmortizacaoContainer');
+        const corpoTabela = document.getElementById('corpoTabelaAmortizacao');
+        const formEmprestimo = document.getElementById('formEmprestimo');
+
+        // Configura data atual como padrão no campo de data
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('dataContratacao').value = today;
+
+        btnCalcular.addEventListener('click', function() {
+            if (!validarCampos()) {
+                return;
+            }
+
+            // Mostrar spinner enquanto carrega
+            corpoTabela.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Calculando...</span>
+                        </div>
+                    </td>
+                </tr>`;
+            tabelaContainer.classList.remove('d-none');
+
+            // Obter valores dos campos
+            const dados = {
+                valorEmprestimo: document.getElementById('valorEmprestimo').value,
+                numParcelas: document.getElementById('numParcelas').value,
+                taxaJuro: document.getElementById('taxaJuro').value,
+                tipoAmortizacao: document.getElementById('tipoAmortizacao').value,
+                frequencia: document.getElementById('frequencia').value,
+                dataContratacao: document.getElementById('dataContratacao').value
+            };
+
+            // Fazer chamada AJAX para o endpoint de cálculo
+            fetch('/emprestimos/calcular-amortizacao', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
+                },
+                body: JSON.stringify(dados)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro no cálculo');
+                    }
+                    return response.json();
+                })
+                .then(parcelas => {
+                    // Preencher tabela com os resultados
+                    preencherTabelaAmortizacao(parcelas);
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    corpoTabela.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-danger">
+                            <i class="bi bi-exclamation-triangle"></i> Erro ao calcular amortização
+                        </td>
+                    </tr>`;
+                });
+        });
+
+        function validarCampos() {
+            const campos = [
+                'valorEmprestimo',
+                'taxaJuro',
+                'numParcelas',
+                'tipoAmortizacao',
+                'dataContratacao',
+                'frequencia'
+            ];
+
+            for (const campo of campos) {
+                const elemento = document.getElementById(campo);
+                if (!elemento.value) {
+                    alert(`O campo "${elemento.labels[0].textContent}" é obrigatório!`);
+                    elemento.focus();
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        function preencherTabelaAmortizacao(parcelas) {
+            corpoTabela.innerHTML = '';
+
+            let totalAmortizacao = 0;
+            let totalJuros = 0;
+            let totalPrestacao = 0;
+
+            parcelas.forEach(parcela => {
+                const amortizacao = parseFloat(parcela.valorAmortizacao);
+                const juros = parseFloat(parcela.valorJuros);
+                const prestacao = parseFloat(parcela.valorPrestacao);
+                const saldoDevedor = parseFloat(parcela.saldoDevedor);
+
+                totalAmortizacao += amortizacao;
+                totalJuros += juros;
+                totalPrestacao += prestacao;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${parcela.numero}</td>
+                    <td>${formatarData(parcela.dataVencimento)}</td>
+                    <td>R$ ${amortizacao.toFixed(2).replace('.', ',')}</td>
+                    <td>R$ ${juros.toFixed(2).replace('.', ',')}</td>
+                    <td>R$ ${prestacao.toFixed(2).replace('.', ',')}</td>
+                    <td>R$ ${saldoDevedor.toFixed(2).replace('.', ',')}</td>
+                `;
+                corpoTabela.appendChild(row);
+            });
+
+            // Atualizar totais
+            document.getElementById('totalAmortizacao').textContent = `R$ ${totalAmortizacao.toFixed(2).replace('.', ',')}`;
+            document.getElementById('totalJuros').textContent = `R$ ${totalJuros.toFixed(2).replace('.', ',')}`;
+            document.getElementById('totalPrestacao').textContent = `R$ ${totalPrestacao.toFixed(2).replace('.', ',')}`;
+        }
+
+        function formatarData(dataString) {
+            const [ano, mes, dia] = dataString.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        // Resetar tabela quando o modal for fechado
+        document.getElementById('emprestimoModal').addEventListener('hidden.bs.modal', function() {
+            tabelaContainer.classList.add('d-none');
+        });
+    });
+
+
+
+    // Configura data atual como padrão no campo de data
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('dataContratacao').value = today;
+    });
+</script>
+</body>
+</html>

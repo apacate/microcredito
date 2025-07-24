@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios - Microcrédito</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #28a745;
+            --info: #17a2b8;
+        }
+
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            border-radius: 12px 12px 0 0 !important;
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .report-card {
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .report-card i {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        .report-card h5 {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar (similar ao dashboard) -->
+
+        <!-- Main Content -->
+        <main class="col-md-10 ms-sm-auto px-md-4 py-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+                <h1 class="h2">Relatórios</h1>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-funnel"></i> Filtros</h5>
+                </div>
+                <div class="card-body">
+                    <form class="row g-3">
+                        <div class="col-md-3">
+                            <label for="dataInicio" class="form-label">Data Início</label>
+                            <input type="date" class="form-control" id="dataInicio">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="dataFim" class="form-label">Data Fim</label>
+                            <input type="date" class="form-control" id="dataFim">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="tipoRelatorio" class="form-label">Tipo de Relatório</label>
+                            <select id="tipoRelatorio" class="form-select">
+                                <option selected>Selecione...</option>
+                                <option>Empréstimos Ativos</option>
+                                <option>Pagamentos Realizados</option>
+                                <option>Inadimplência</option>
+                                <option>Clientes Ativos</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-filter-circle"></i> Aplicar Filtros
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Report Cards -->
+            <div class="row">
+                <div class="col-md-6 col-lg-3">
+                    <div class="report-card text-center">
+                        <i class="bi bi-cash-coin"></i>
+                        <h5>Empréstimos Ativos</h5>
+                        <p class="text-muted">Total de empréstimos em andamento</p>
+                        <button class="btn btn-outline-primary">Gerar Relatório</button>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="report-card text-center">
+                        <i class="bi bi-check-circle"></i>
+                        <h5>Pagamentos Realizados</h5>
+                        <p class="text-muted">Histórico de pagamentos</p>
+                        <button class="btn btn-outline-primary">Gerar Relatório</button>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="report-card text-center">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <h5>Inadimplência</h5>
+                        <p class="text-muted">Parcelas em atraso</p>
+                        <button class="btn btn-outline-primary">Gerar Relatório</button>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="report-card text-center">
+                        <i class="bi bi-people"></i>
+                        <h5>Clientes Ativos</h5>
+                        <p class="text-muted">Relação de clientes</p>
+                        <button class="btn btn-outline-primary">Gerar Relatório</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Results -->
+            <div class="card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-file-earmark-text"></i> Resultados</h5>
+                    <div>
+                        <button class="btn btn-sm btn-success">
+                            <i class="bi bi-file-earmark-excel"></i> Exportar Excel
+                        </button>
+                        <button class="btn btn-sm btn-danger ms-2">
+                            <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Valor</th>
+                                <th>Data</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- Dados seriam preenchidos dinamicamente -->
+                            <tr>
+                                <td>1001</td>
+                                <td>João Silva</td>
+                                <td>R$ 5.000,00</td>
+                                <td>15/07/2023</td>
+                                <td><span class="badge bg-success">Ativo</span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

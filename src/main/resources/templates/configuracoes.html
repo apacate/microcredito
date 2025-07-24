@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configurações - Microcrédito</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --success: #28a745;
+      --warning: #ffc107;
+      --danger: #dc3545;
+    }
+
+    .card {
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+      border-radius: 12px 12px 0 0 !important;
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .nav-pills .nav-link {
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-pills .nav-link.active {
+      background-color: var(--secondary);
+    }
+
+    .form-control {
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+    }
+
+    .form-control:focus {
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+    }
+
+    .settings-option {
+      padding: 1rem;
+      border-bottom: 1px solid #eee;
+      transition: background-color 0.2s;
+    }
+
+    .settings-option:hover {
+      background-color: #f8f9fa;
+    }
+
+    .settings-option:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar (similar ao dashboard) -->
+
+    <!-- Main Content -->
+    <main class="col-md-10 ms-sm-auto px-md-4 py-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+        <h1 class="h2">Configurações do Sistema</h1>
+      </div>
+
+      <div class="row">
+        <div class="col-md-3">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0"><i class="bi bi-gear"></i> Menu</h5>
+            </div>
+            <div class="card-body p-0">
+              <div class="nav flex-column nav-pills" id="settingsTabs" role="tablist">
+                <button class="nav-link active" id="geral-tab" data-bs-toggle="pill" data-bs-target="#geral" type="button" role="tab">
+                  <i class="bi bi-sliders me-2"></i> Geral
+                </button>
+                <button class="nav-link" id="taxas-tab" data-bs-toggle="pill" data-bs-target="#taxas" type="button" role="tab">
+                  <i class="bi bi-percent me-2"></i> Taxas e Juros
+                </button>
+                <button class="nav-link" id="notificacoes-tab" data-bs-toggle="pill" data-bs-target="#notificacoes" type="button" role="tab">
+                  <i class="bi bi-bell me-2"></i> Notificações
+                </button>
+                <button class="nav-link" id="backup-tab" data-bs-toggle="pill" data-bs-target="#backup" type="button" role="tab">
+                  <i class="bi bi-cloud-arrow-up me-2"></i> Backup
+                </button>
+                <button class="nav-link" id="usuarios-tab" data-bs-toggle="pill" data-bs-target="#usuarios" type="button" role="tab">
+                  <i class="bi bi-people me-2"></i> Usuários
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-9">
+          <div class="tab-content" id="settingsTabsContent">
+            <!-- Geral Tab -->
+            <div class="tab-pane fade show active" id="geral" role="tabpanel">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0"><i class="bi bi-sliders"></i> Configurações Gerais</h5>
+                </div>
+                <div class="card-body">
+                  <form>
+                    <div class="settings-option">
+                      <h6>Nome da Instituição</h6>
+                      <p class="text-muted">Nome que será exibido no sistema</p>
+                      <input type="text" class="form-control" value="Microcrédito">
+                    </div>
+
+                    <div class="settings-option">
+                      <h6>Moeda</h6>
+                      <p class="text-muted">Moeda padrão para valores monetários</p>
+                      <select class="form-select">
+                        <option>Real Brasileiro (R$)</option>
+                        <option>Dólar Americano (US$)</option>
+                        <option>Euro (€)</option>
+                      </select>
+                    </div>
+
+                    <div class="settings-option">
+                      <h6>Formato de Data</h6>
+                      <p class="text-muted">Como as datas serão exibidas</p>
+                      <select class="form-select">
+                        <option>DD/MM/AAAA</option>
+                        <option>MM/DD/AAAA</option>
+                        <option>AAAA-MM-DD</option>
+                      </select>
+                    </div>
+
+                    <div class="text-end mt-3">
+                      <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <!-- Taxas e Juros Tab -->
+            <div class="tab-pane fade" id="taxas" role="tabpanel">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0"><i class="bi bi-percent"></i> Taxas e Juros</h5>
+                </div>
+                <div class="card-body">
+                  <form>
+                    <div class="settings-option">
+                      <h6>Taxa de Juros Padrão</h6>
+                      <p class="text-muted">Taxa anual aplicada por padrão nos empréstimos</p>
+                      <div class="input-group" style="max-width: 200px;">
+                        <input type="number" class="form-control" value="12.5" step="0.1">
+                        <span class="input-group-text">% ao ano</span>
+                      </div>
+                    </div>
+
+                    <div class="settings-option">
+                      <h6>Multa por Atraso</h6>
+                      <p class="text-muted">Percentual aplicado sobre o valor da parcela em atraso</p>
+                      <div class="input-group" style="max-width: 200px;">
+                        <input type="number" class="form-control" value="2" step="0.1">
+                        <span class="input-group-text">%</span>
+                      </div>
+                    </div>
+
+                    <div class="text-end mt-3">
+                      <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <!-- Outras abas seriam similares -->
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
